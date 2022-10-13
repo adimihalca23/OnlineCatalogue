@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using OnlineCatalogue.DTOs;
 using OnlineCatalogueWEB.DTOs;
 using TemaLab19.DTOs;
 
@@ -62,6 +63,23 @@ namespace TemaLab19.Extensions
                 SubjectId = mark.SubjectId,
                 Value = mark.Value
             };
+        }
+
+        public static TeacherToGet ToDto(this Teacher teacher)
+        {
+            if (teacher == null)
+            {
+                return null;
+            }
+
+            TeacherToGet dto = new TeacherToGet();
+            dto.Id = teacher.Id;
+            dto.Name = teacher.Name;
+            dto.Rank = teacher.Rank;
+            dto.Subject = teacher.Subject.ToDto();
+            dto.Address = teacher.Address.ToDto();
+
+            return dto;
         }
     }
 }

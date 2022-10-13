@@ -42,7 +42,7 @@ namespace TemaLab19.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentToGet))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public IActionResult GetAllStudents([FromRoute] int studentId)
+        public IActionResult GetStudent([FromRoute] int studentId)
         {
             try
             {

@@ -17,7 +17,7 @@ namespace Data.Models
         public string Name { get; set; }
         [Required(ErrorMessage = "Teacher id is required")]
         [Range(1, int.MaxValue)]
-        public int TeacherId { get; set; }
+        public int? TeacherId { get; set; }
     } 
 }
   

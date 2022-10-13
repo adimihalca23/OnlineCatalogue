@@ -187,5 +187,115 @@ namespace Data
 
             return result;
         }
+
+        //Subject
+        public void DeleteSubject(int subjectId )
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+
+            var subject = ctx.Subjects
+                .Where(s => s.Id == subjectId)
+                .FirstOrDefault();
+
+            if (subject == null)
+            {
+                return;
+            }
+
+            ctx.Remove(subject);
+            ctx.SaveChanges();
+        }
+
+        public Teacher CreateTeacher(Teacher teacherToCreate)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+            var teacher = new Teacher { Name = teacherToCreate.Name, Rank = teacherToCreate.Rank };
+
+            ctx.Add(teacher);
+            ctx.SaveChanges();
+            return teacher;
+        }
+
+        public void DeleteTeacher(int teacherId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+
+            var teacher = ctx.Teachers.Include(t => t.Subject).Where(t => t.Id == teacherId).FirstOrDefault();
+            if (teacher == null)
+            {
+                return;
+            }
+
+            teacher.Subject.TeacherId = null;
+
+            ctx.Teachers.Remove(teacher);
+            ctx.SaveChanges();
+        }
+
+        public void ChangeTeacherAddress(int teacherId, Address newAddress)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+
+            var teacher = ctx.Teachers.Include(t => t.Address).FirstOrDefault(t => t.Id == teacherId);
+            if (teacher == null)
+                throw new EntityNotFoundException($"A teacher with an id of {teacherId} was not found.");
+
+            if (teacher.Address == null)
+            {
+                teacher.Address = new Address();
+            }
+
+            teacher.Address.City = newAddress.City;
+            teacher.Address.Street = newAddress.Street;
+            teacher.Address.Number = newAddress.Number;
+
+            ctx.SaveChanges();
+        }
+
+        public void AssignTeacherToSubject(int teacherId, int subjectId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+
+            var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
+            if (subject == null)
+                throw new EntityNotFoundException($"A subject with an id of {subjectId} was not found.");
+
+            subject.TeacherId = teacherId;
+
+            ctx.SaveChanges();
+        }
+
+        public void PromoteTeacher(int teacherId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+
+            var teacher = ctx.Teachers.FirstOrDefault(t => t.Id == teacherId);
+
+            if (teacher == null)
+                throw new EntityNotFoundException($"A teacher with an id of {teacherId} was not found.");
+
+            if (teacher.Rank == "Instructor")
+            {
+                teacher.Rank = Rank.AssistantProfessor.ToString();
+                ctx.SaveChanges();
+                return;
+            }
+            if (teacher.Rank == "AssistantProfessor")
+            {
+                teacher.Rank = Rank.AssociateProfessor.ToString();
+                ctx.SaveChanges();
+                return;
+            }
+            if (teacher.Rank == "AssociateProfessor")
+            {
+                teacher.Rank = Rank.Professor.ToString();
+                ctx.SaveChanges();
+                return;
+            }
+            if (teacher.Rank == "Professor")
+            {
+                return;
+            }
+        }
     }
 }
