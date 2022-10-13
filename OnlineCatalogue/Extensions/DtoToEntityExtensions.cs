@@ -1,8 +1,7 @@
 ﻿using Data.Models;
 using OnlineCatalogue.DTOs;
-using TemaLab19.DTOs;
 
-namespace TemaLab19.Extensions
+namespace OnlineCatalogue.Extensions
 {
     public static class DtoToEntityExtensions
     {

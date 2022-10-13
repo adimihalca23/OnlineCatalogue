@@ -1,6 +1,4 @@
-﻿using Data.Models;
-
-namespace OnlineCatalogue.DTOs
+﻿namespace OnlineCatalogue.DTOs
 {
     public class TeacherToCreate
     {

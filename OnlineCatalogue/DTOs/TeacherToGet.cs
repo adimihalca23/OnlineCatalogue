@@ -1,8 +1,4 @@
-﻿using Data.Models;
-using OnlineCatalogueWEB.DTOs;
-using TemaLab19.DTOs;
-
-namespace OnlineCatalogue.DTOs
+﻿namespace OnlineCatalogue.DTOs
 {
     public class TeacherToGet
     {

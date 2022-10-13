@@ -1,11 +1,9 @@
 ﻿using Data;
 using Data.Exceptions;
-using Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using OnlineCatalogueWEB.DTOs;
+using OnlineCatalogue.DTOs;
+using OnlineCatalogue.Extensions;
 using System.Runtime.InteropServices;
-using TemaLab19.DTOs;
-using TemaLab19.Extensions;
 
 namespace TemaLab19.Controllers
 {

@@ -1,5 +1,5 @@
-﻿namespace TemaLab19.DTOs
-{
+﻿namespace OnlineCatalogue.DTOs 
+{ 
     public class StudentToGet
     {
         public int Id { get; set; }

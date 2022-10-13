@@ -1,4 +1,4 @@
-﻿namespace TemaLab19.DTOs
+﻿namespace OnlineCatalogue.DTOs
 {
     public class StudentToUpdate
     {

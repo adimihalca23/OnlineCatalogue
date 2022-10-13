@@ -1,4 +1,4 @@
-﻿namespace OnlineCatalogueWEB.DTOs
+﻿namespace OnlineCatalogue.DTOs
 {
     public class MarkToGet
     {

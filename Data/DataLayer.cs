@@ -13,17 +13,19 @@ namespace Data
             this.connectionString = connectionString;
         }
 
+        //<-----------------------STUDENTS--------------------->
         public List<Student> GetAllStudents()
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
+
             return ctx.Students.Include(s=>s.Address).ToList();
         }
 
         public Student GetStudentById(int studentId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var student = ctx.Students.Where(s => s.Id == studentId).FirstOrDefault();
+
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
@@ -41,7 +43,6 @@ namespace Data
         public void DeleteStudent(int studentId, bool deleteAddress)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var student = ctx.Students
                 .Include(student => student.Address)
                 .Where(s => s.Id == studentId)
@@ -88,8 +89,8 @@ namespace Data
         public void ChangeStudentAddress(int studentId, Address newAddress)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-            
             var student = ctx.Students.Include(s=>s.Address).FirstOrDefault(s => s.Id == studentId);
+
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
@@ -105,25 +106,11 @@ namespace Data
             ctx.SaveChanges();
         }
 
-
-
-        public Subject AddSubject(string subjectName, int teacherId)
-        {
-            using var ctx = new CatalogueDbContext(this.connectionString);
-
-            var subject = new Subject { Name = subjectName, TeacherId = teacherId };
-
-            ctx.Subjects.Add(subject);
-            ctx.SaveChanges();
-
-            return subject;
-        }
-
         public void AddMarkToStudent(int studentId, int subjectId, int markValue)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var student = ctx.Students.FirstOrDefault(x => x.Id == studentId);
+
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
@@ -132,11 +119,50 @@ namespace Data
             ctx.SaveChanges();
         }
 
+        public List<StudentWithAverageToGet> GetAllStudentsOrdered(bool? orderDescending)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+            var allStudentsWithMarks = ctx.Students.Include(s => s.Marks).ToList();
+
+            List<StudentWithAverageToGet> result = new List<StudentWithAverageToGet>();
+
+            if ((bool)orderDescending)
+            {
+                result = allStudentsWithMarks.OrderByDescending(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
+                    s.Id,
+                    s.FirstName + s.LastName,
+                    s.Age,
+                    s.Marks.Average(m => m.Value))).ToList();
+            }
+            else
+            {
+                result = allStudentsWithMarks.OrderBy(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
+                    s.Id,
+                    s.FirstName + s.LastName,
+                    s.Age,
+                    s.Marks.Average(m => m.Value))).ToList();
+            }
+
+            return result;
+        }
+
+        //<-----------------------SUBJECT--------------------->
+        public Subject AddSubject(string subjectName, int teacherId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+            var subject = new Subject { Name = subjectName, TeacherId = teacherId };
+
+            ctx.Subjects.Add(subject);
+            ctx.SaveChanges();
+
+            return subject;
+        }
+
         public List<Mark> GetAllMarks(int studentId, int? subjectId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var student = ctx.Students.Include(s => s.Marks).FirstOrDefault(s => s.Id == studentId);
+
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
@@ -153,46 +179,17 @@ namespace Data
         public List<AverageForSubject> GetAveragesPerSubject(int studentId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var student = ctx.Students.Include(s => s.Marks).FirstOrDefault(s => s.Id == studentId);
+
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
             return student.Marks.GroupBy(m => m.SubjectId).Select(g => new AverageForSubject { SubjectId = g.Key, Average = g.Average( m => m.Value)}).ToList();
         }
 
-        public List<StudentWithAverageToGet> GetAllStudentsOrdered(bool? orderDescending )
-        {
-            using var ctx = new CatalogueDbContext(this.connectionString);
-
-            var allStudentsWithMarks = ctx.Students.Include(s => s.Marks).ToList();
-            List<StudentWithAverageToGet> result = new List<StudentWithAverageToGet>();
-
-            if ((bool)orderDescending)
-            {
-                result = allStudentsWithMarks.OrderByDescending(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
-                    s.Id,
-                    s.FirstName + s.LastName,
-                    s.Age, 
-                    s.Marks.Average(m => m.Value))).ToList();
-            }
-            else
-            {
-                result = allStudentsWithMarks.OrderBy(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
-                    s.Id,
-                    s.FirstName + s.LastName,
-                    s.Age,
-                    s.Marks.Average(m => m.Value))).ToList();
-            }
-
-            return result;
-        }
-
-        //Subject
         public void DeleteSubject(int subjectId )
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var subject = ctx.Subjects
                 .Where(s => s.Id == subjectId)
                 .FirstOrDefault();
@@ -206,6 +203,7 @@ namespace Data
             ctx.SaveChanges();
         }
 
+        //<-----------------------TEACHER--------------------->
         public Teacher CreateTeacher(Teacher teacherToCreate)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
@@ -213,14 +211,15 @@ namespace Data
 
             ctx.Add(teacher);
             ctx.SaveChanges();
+
             return teacher;
         }
 
         public void DeleteTeacher(int teacherId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var teacher = ctx.Teachers.Include(t => t.Subject).Where(t => t.Id == teacherId).FirstOrDefault();
+
             if (teacher == null)
             {
                 return;
@@ -235,8 +234,8 @@ namespace Data
         public void ChangeTeacherAddress(int teacherId, Address newAddress)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var teacher = ctx.Teachers.Include(t => t.Address).FirstOrDefault(t => t.Id == teacherId);
+
             if (teacher == null)
                 throw new EntityNotFoundException($"A teacher with an id of {teacherId} was not found.");
 
@@ -255,8 +254,8 @@ namespace Data
         public void AssignTeacherToSubject(int teacherId, int subjectId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
+
             if (subject == null)
                 throw new EntityNotFoundException($"A subject with an id of {subjectId} was not found.");
 
@@ -268,7 +267,6 @@ namespace Data
         public void PromoteTeacher(int teacherId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
-
             var teacher = ctx.Teachers.FirstOrDefault(t => t.Id == teacherId);
 
             if (teacher == null)
@@ -296,6 +294,17 @@ namespace Data
             {
                 return;
             }
+        }
+
+        public List<Mark> GetMarksByTeacher(int teacherId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+            var teacher = ctx.Teachers.Include(t => t.Subject).FirstOrDefault(t => t.Id == teacherId);
+            
+            if (teacher == null)
+                throw new EntityNotFoundException($"A teacher with an id of {teacherId} was not found.");
+            
+            return ctx.Marks.Where(m => m.SubjectId == teacher.Subject.Id).ToList();
         }
     }
 }
