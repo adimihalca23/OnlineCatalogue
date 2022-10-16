@@ -73,7 +73,7 @@ namespace TemaLab19.Controllers
         /// <param name="studentId">student id</param>
         /// <param name="deleteAddress">if true the student address will be deleted as well</param>
         [HttpDelete("remove-{studentId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult DeleteStudent([FromRoute] int studentId, [FromQuery] bool deleteAddress)
@@ -88,7 +88,7 @@ namespace TemaLab19.Controllers
         /// <param name="studentId">the id of the student to modify</param>
         /// <param name="newStudentData">new student information</param>
         [HttpPut("update-{studentId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult UpdateStudent([FromRoute] int studentId, [FromBody] StudentToUpdate newStudentData)
@@ -110,7 +110,7 @@ namespace TemaLab19.Controllers
         /// <param name="studentId">student id</param>
         /// <param name="newAddress">new address</param>
         [HttpPut("update-{studentId}/address")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult ChangeStudentAddress([FromRoute] int studentId, [FromBody] AddressToUpdate newAddress)
@@ -133,7 +133,7 @@ namespace TemaLab19.Controllers
         /// <param name="markValue">mark value</param>
         /// <param name="subjectId">subject id</param>
         [HttpPost("add-mark")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult AddMarkToStudent([FromQuery] int studnetId, [FromBody] int markValue, [FromQuery] int subjectId)
         {
@@ -168,7 +168,7 @@ namespace TemaLab19.Controllers
         /// <param name="studentId">student Idd</param>
         /// <returns>List of averages per subject, of a student</returns>
         [HttpGet("get-averages-marks")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AverageForSubjectDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<double>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult GetAveragesPerSubject([FromQuery] int studentId)
         {
@@ -192,7 +192,7 @@ namespace TemaLab19.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult GetAllStudentsOrderd([Optional][FromQuery] bool orderDescending)
         {
-            return Ok(dataLayer.GetAllStudentsOrdered(orderDescending));
+            return Ok(dataLayer.GetAllStudentsOrdered(orderDescending).Select(s => s.ToDtoAverage()));
         }
 
 

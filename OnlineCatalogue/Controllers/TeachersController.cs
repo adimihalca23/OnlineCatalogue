@@ -34,7 +34,7 @@ namespace OnlineCatalogue.Controllers
         /// </summary>
         /// <param name="teacherId">teacher id</param>
         [HttpDelete("remove-{teacherId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult DeleteTeacher([FromRoute] int teacherId)
@@ -49,7 +49,7 @@ namespace OnlineCatalogue.Controllers
         /// <param name="teacherId">teacher id</param>
         /// <param name="newAddress">new address</param>
         [HttpPut("update-{teacherId}/address")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult ChangeTeacherAdress([FromRoute] int teacherId, [FromBody] AddressToUpdate newAddress)
@@ -71,7 +71,7 @@ namespace OnlineCatalogue.Controllers
         /// <param name="teacherId">teacher id</param>
         /// <param name="subjectId">subject id</param>
         [HttpPost("assign-teacher")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult AssignTeacherToSubject([FromQuery] int teacherId, [FromQuery] int subjectId)
         {
@@ -91,7 +91,7 @@ namespace OnlineCatalogue.Controllers
         /// </summary>
         /// <param name="teacherId">teacher id</param>
         [HttpPost("promote-teacher")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public IActionResult PromoteTeacher([FromQuery] int teacherId)
         {

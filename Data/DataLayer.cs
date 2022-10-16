@@ -119,28 +119,36 @@ namespace Data
             ctx.SaveChanges();
         }
 
-        public List<StudentWithAverageToGet> GetAllStudentsOrdered(bool? orderDescending)
+        public List<Student> GetAllStudentsOrdered(bool? orderDescending)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
             var allStudentsWithMarks = ctx.Students.Include(s => s.Marks).ToList();
 
-            List<StudentWithAverageToGet> result = new List<StudentWithAverageToGet>();
+            List<Student> result = new List<Student>();
 
             if ((bool)orderDescending)
             {
-                result = allStudentsWithMarks.OrderByDescending(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
-                    s.Id,
-                    s.FirstName + s.LastName,
-                    s.Age,
-                    s.Marks.Average(m => m.Value))).ToList();
+                result = allStudentsWithMarks.OrderByDescending(s => s.Marks.Average(m => m.Value)).Select(s => new Student
+                {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    Age = s.Age,
+                    Address = s.Address,
+                    Marks = s.Marks
+                }).ToList();
             }
             else
             {
-                result = allStudentsWithMarks.OrderBy(s => s.Marks.Average(m => m.Value)).Select(s => new StudentWithAverageToGet(
-                    s.Id,
-                    s.FirstName + s.LastName,
-                    s.Age,
-                    s.Marks.Average(m => m.Value))).ToList();
+                result = allStudentsWithMarks.OrderBy(s => s.Marks.Average(m => m.Value)).Select(s => new Student
+                {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    Age = s.Age,
+                    Address = s.Address,
+                    Marks = s.Marks
+                }).ToList();
             }
 
             return result;
@@ -176,7 +184,7 @@ namespace Data
             }
         }
 
-        public List<AverageForSubject> GetAveragesPerSubject(int studentId)
+        public List<double> GetAveragesPerSubject(int studentId)
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
             var student = ctx.Students.Include(s => s.Marks).FirstOrDefault(s => s.Id == studentId);
@@ -184,7 +192,30 @@ namespace Data
             if (student == null)
                 throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
 
-            return student.Marks.GroupBy(m => m.SubjectId).Select(g => new AverageForSubject { SubjectId = g.Key, Average = g.Average( m => m.Value)}).ToList();
+            return student.Marks.GroupBy(m => m.SubjectId).Select(g => g.Average( m => m.Value)).ToList();
+        }
+
+        public List<string> GetSubjects(int studentId)
+        {
+            using var ctx = new CatalogueDbContext(this.connectionString);
+            var student = ctx.Students.Include(s => s.Marks).FirstOrDefault(s => s.Id == studentId);
+
+            if (student == null)
+                throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
+
+            List<string> subjectsNames = new List<string>();
+
+            var subjectsIds = student.Marks.Select(m => m.SubjectId).ToList();
+            if (subjectsIds == null)
+                throw new EntityNotFoundException($"No sjubject was not found.");
+
+            foreach (var id in subjectsIds)
+            {
+                var subjectName = ctx.Subjects.Where(s => s.Id == id).Select(s => s.Name).FirstOrDefault();
+                subjectsNames.Add(subjectName);
+            }
+
+            return subjectsNames;
         }
 
         public void DeleteSubject(int subjectId )

@@ -79,5 +79,15 @@ namespace OnlineCatalogue.Extensions
 
             return dto;
         }
+
+        public static StudentWithAverageToGetDto ToDtoAverage(this Student student)
+        {
+            StudentWithAverageToGetDto dto = new StudentWithAverageToGetDto();
+            dto.Name = student.FirstName + student.LastName;
+            dto.Age = student.Age;
+            dto.Average = student.Marks.Average(m => m.Value);
+
+            return dto;
+        }
     }
 }

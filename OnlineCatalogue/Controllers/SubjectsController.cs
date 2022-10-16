@@ -35,7 +35,7 @@ namespace OnlineCatalogueWEB.Controllers
         /// </summary>
         /// <param name="subjectId">subject id</param>
         [HttpDelete("remove-{subjectId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         public IActionResult DeleteSubject([FromRoute] int subjectId)
