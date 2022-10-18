@@ -83,6 +83,7 @@ namespace OnlineCatalogue.Extensions
         public static StudentWithAverageToGetDto ToDtoAverage(this Student student)
         {
             StudentWithAverageToGetDto dto = new StudentWithAverageToGetDto();
+            dto.Id = student.Id;
             dto.Name = student.FirstName + student.LastName;
             dto.Age = student.Age;
             dto.Average = student.Marks.Average(m => m.Value);

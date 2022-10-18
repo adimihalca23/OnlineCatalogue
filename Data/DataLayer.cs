@@ -195,29 +195,6 @@ namespace Data
             return student.Marks.GroupBy(m => m.SubjectId).Select(g => g.Average( m => m.Value)).ToList();
         }
 
-        public List<string> GetSubjects(int studentId)
-        {
-            using var ctx = new CatalogueDbContext(this.connectionString);
-            var student = ctx.Students.Include(s => s.Marks).FirstOrDefault(s => s.Id == studentId);
-
-            if (student == null)
-                throw new EntityNotFoundException($"A student with an id of {studentId} was not found.");
-
-            List<string> subjectsNames = new List<string>();
-
-            var subjectsIds = student.Marks.Select(m => m.SubjectId).ToList();
-            if (subjectsIds == null)
-                throw new EntityNotFoundException($"No sjubject was not found.");
-
-            foreach (var id in subjectsIds)
-            {
-                var subjectName = ctx.Subjects.Where(s => s.Id == id).Select(s => s.Name).FirstOrDefault();
-                subjectsNames.Add(subjectName);
-            }
-
-            return subjectsNames;
-        }
-
         public void DeleteSubject(int subjectId )
         {
             using var ctx = new CatalogueDbContext(this.connectionString);
@@ -255,9 +232,9 @@ namespace Data
             {
                 return;
             }
-
+            
             teacher.Subject.TeacherId = null;
-
+            
             ctx.Teachers.Remove(teacher);
             ctx.SaveChanges();
         }
